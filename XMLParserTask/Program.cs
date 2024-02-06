@@ -9,17 +9,32 @@ ProductService productService = new ProductService(appDbContext);
 ShoppingCartService shoppingCartService = new ShoppingCartService(appDbContext);
 UserService userService = new UserService(appDbContext);
 
+HashSet<string> nameProducts = new HashSet<string>();
+HashSet<string> emailUsers = new HashSet<string>();
+HashSet<int> idOrders = new HashSet<int>();
+
 ShoppingCartEntity shoppingCart = XMLParsingService.ParseData("data.xml");
 
-foreach (OrderEntity orderEntity in shoppingCart?.order)
+shoppingCart.order.ForEach(x =>
 {
-    Users users = userService.Insert(orderEntity);
-    Order order = orderService.Insert(orderEntity, users);
+    x.Products.ForEach(x => nameProducts.Add(x.Name));
+    emailUsers.Add(x.User.email);
+    idOrders.Add(x.No);
+});
 
-    foreach (ProductEntity product in orderEntity.Products)
+List<Product> products = productService.GetProductsName(nameProducts);
+List<User> users = userService.GetUsersEmail(emailUsers);
+List<Order> orders = orderService.GetOrders(idOrders);
+
+foreach (OrderEntity orderEntity in shoppingCart.order)
+{
+    User user = userService.InsertFromList(orderEntity, users);
+    Order order = orderService.InsertFromList(orderEntity, user, orders);
+
+    foreach (ProductEntity productEntity in orderEntity.Products)
     {
-        Products products = productService.Insert(product);
-        shoppingCartService.Insert(products, order, product.Quantity);
+        Product product = productService.InsertFromList(productEntity, products);
+        shoppingCartService.Insert(product, order, productEntity.Quantity);
     }
 }
 

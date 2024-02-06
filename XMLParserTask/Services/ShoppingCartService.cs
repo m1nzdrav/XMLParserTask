@@ -1,5 +1,4 @@
-﻿using XMLParser.XML;
-using XMLParserTask.Data;
+﻿using XMLParserTask.Data;
 using XMLParserTask.Model;
 
 namespace XMLParser.Services;
@@ -13,16 +12,17 @@ public class ShoppingCartService
         _appDbContext = appDbContext;
     }
 
-    public ShoppingCart Insert(Products products, Order order, int quantity)
+    public ShoppingCart Insert(Product product, Order order, int quantity)
     {
         ShoppingCart shoppingCart = new ShoppingCart()
         {
-            Products = _appDbContext.Products.Local.FirstOrDefault(x => x.Name == products.Name, products),
+            Product = _appDbContext.Products.Local.FirstOrDefault(x => x.Name == product.Name, product),
             Order = order,
             CountProduct = quantity
         };
 
         _appDbContext.ShoppingCarts.AddRange(shoppingCart);
+
         return shoppingCart;
     }
 }

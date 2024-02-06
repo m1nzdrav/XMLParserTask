@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using XMLParser.XML;
 using XMLParserTask.Data;
 using XMLParserTask.Model;
@@ -14,21 +15,47 @@ public class ProductService
         _appDbContext = appDbContext;
     }
 
-    public Products Insert(ProductEntity product)
+    public Product Insert(ProductEntity productEntity)
     {
-        Products products = _appDbContext.Products.ToList()
+        Product product = _appDbContext.Products
             .FirstOrDefault(
-                (x => x.Name == product.Name),
-                new Products()
+                (x => x.Name == productEntity.Name),
+                new Product()
                 {
-                    Name = product.Name,
-                    Cost = product.Price
+                    Name = productEntity.Name,
+                    Cost = productEntity.Price
                 });
 
-        if (!_appDbContext.Products.Any(x => x.Name == products.Name) &&
-            !_appDbContext.Products.Local.Any(x => x.Name == products.Name))
-            _appDbContext.Products.Add(products);
+        if (!_appDbContext.Products.Any(x => x.Name == product.Name) &&
+            _appDbContext.Products.Local.All(x => x.Name != product.Name))
+            _appDbContext.Products.Add(product);
 
-        return products;
+        return product;
+    }
+
+    public Product InsertFromList(ProductEntity productEntity, List<Product> baseValue)
+    {
+        Product product = baseValue
+            .FirstOrDefault(
+                (x => x.Name == productEntity.Name),
+                new Product()
+                {
+                    Name = productEntity.Name,
+                    Cost = productEntity.Price
+                });
+
+        if (baseValue.Any(x => x.Name == product.Name) ||
+            _appDbContext.Products.Local.Any(x => x.Name == product.Name)) return product;
+
+        _appDbContext.Products.Add(product);
+        baseValue.Add(product);
+
+        return product;
+    }
+
+    public List<Product> GetProductsName( HashSet<string> hashSet)
+    {
+        return _appDbContext.Products
+            .Where(product => product.Name != null && hashSet.Contains(product.Name)).ToList();
     }
 }

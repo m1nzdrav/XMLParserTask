@@ -44,7 +44,7 @@ namespace XMLParserTask.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("XMLParserTask.Model.Products", b =>
+            modelBuilder.Entity("XMLParserTask.Model.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +88,7 @@ namespace XMLParserTask.Migrations
                     b.ToTable("ShoppingCarts");
                 });
 
-            modelBuilder.Entity("XMLParserTask.Model.Users", b =>
+            modelBuilder.Entity("XMLParserTask.Model.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -110,13 +110,13 @@ namespace XMLParserTask.Migrations
 
             modelBuilder.Entity("XMLParserTask.Model.Order", b =>
                 {
-                    b.HasOne("XMLParserTask.Model.Users", "Users")
+                    b.HasOne("XMLParserTask.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("XMLParserTask.Model.ShoppingCart", b =>
@@ -127,7 +127,7 @@ namespace XMLParserTask.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("XMLParserTask.Model.Products", "Products")
+                    b.HasOne("XMLParserTask.Model.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -135,7 +135,7 @@ namespace XMLParserTask.Migrations
 
                     b.Navigation("Order");
 
-                    b.Navigation("Products");
+                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }

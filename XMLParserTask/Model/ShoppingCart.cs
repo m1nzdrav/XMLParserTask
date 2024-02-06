@@ -9,7 +9,7 @@ public class ShoppingCart
 
     public int ProductId { get; set; }
 
-    [ForeignKey("ProductId")] public Products Products { get; set; }
+    [ForeignKey("ProductId")] public Product Product { get; set; }
 
     public int OrderId { get; set; }
 

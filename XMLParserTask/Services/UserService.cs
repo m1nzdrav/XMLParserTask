@@ -14,19 +14,44 @@ public class UserService
         _appDbContext = appDbContext;
     }
 
-    public Users Insert(OrderEntity orderEntity)
+    public User Insert(OrderEntity orderEntity)
     {
-        Users users = _appDbContext.Users.Local.ToList()
+        User user = _appDbContext.Users.Local.ToList()
             .FirstOrDefault(
-                (x => x.UserName == orderEntity.User.fio), new Users()
+                (x => x.UserName == orderEntity.User.fio), new User()
                 {
                     UserName = orderEntity.User.fio,
                     Email = orderEntity.User.email
                 });
 
-        if (users.Id == 0 && !_appDbContext.Users.Any(x => x.Email == users.Email))
-            _appDbContext.Users.Add(users);
+        if (user.Id == 0 && !_appDbContext.Users.Any(x => x.Email == user.Email))
+            _appDbContext.Users.Add(user);
 
-        return users;
+        return user;
+    }
+
+    public User InsertFromList(OrderEntity orderEntity, List<User> baseValue)
+    {
+        User user = baseValue
+            .FirstOrDefault(
+                (x => x.UserName == orderEntity.User.fio), new User()
+                {
+                    UserName = orderEntity.User.fio,
+                    Email = orderEntity.User.email
+                });
+
+        if (user.Id == 0 && !_appDbContext.Users.Any(x => x.Email == user.Email))
+        {
+            _appDbContext.Users.Add(user);
+            baseValue.Add(user);
+        }
+
+        return user;
+    }
+
+    public List<User> GetUsersEmail(HashSet<string> hashSet)
+    {
+        return _appDbContext.Users
+            .Where(users => users.Email != null && hashSet.Contains(users.Email)).ToList();
     }
 }
